@@ -6,16 +6,17 @@ Auto-drop your Windows system volume while you dictate with **[Vowen](https://vo
 - Press **Ctrl+Shift** again to stop → volume restores to whatever it was before, Vowen stops
 - Normal shortcuts like `Ctrl+Shift+V`, `Ctrl+Shift+T` keep working — no false toggles
 
+> **Not affiliated with Vowen.** This is an independent open-source utility that happens to pair well with Vowen. The Vowen name is used here only to identify the dictation tool this project is designed to complement.
+
 ## How it works
 
 A tiny AutoHotkey v2 script sits in your system tray as a silent observer. It watches for a clean Ctrl+Shift tap (no other keys pressed in between) and toggles system volume accordingly. It doesn't intercept any keys, so Vowen keeps receiving your input exactly as you typed it.
 
 ## Requirements
 
-- Windows 10 or 11
-- An AI dictation tool that toggles on **Ctrl+Shift** (Vowen by default — anything else using the same shortcut will work too)
-
-Everything else (AutoHotkey v2) is installed automatically by the installer.
+- **Windows 10 or 11**
+- **A dictation tool installed and working** — this project only ducks the system volume; it does not transcribe speech. It's designed to pair with **[Vowen](https://vowen.ai)** — download and set that up separately from the official site. Any other dictation app configured to toggle on `Ctrl+Shift` will also work
+- **AutoHotkey v2** — installed automatically by the installer (you don't need to do this yourself)
 
 ## Install
 
@@ -98,6 +99,12 @@ Any two modifier keys will work — swap the virtual-key codes (AutoHotkey's [Ke
 **Nothing happens when I press Ctrl+Shift** — check the tray for a green **H**. No icon means the script isn't running; double-click `%LOCALAPPDATA%\VowenDucker\vowen-duck.ahk` to start it.
 
 **My other app uses Ctrl+Shift differently** — this script only fires on Ctrl+Shift with nothing else pressed, so it shouldn't conflict with `Ctrl+Shift+letter` shortcuts. If you hit an edge case, open an issue.
+
+## Acknowledgements
+
+Inspired by **[WisprDuck](https://github.com/kalepail/wispr-duck)** by [kalepail](https://github.com/kalepail) — a macOS menu bar utility that auto-ducks background audio when the microphone is active. This project is the Windows equivalent, aimed at hotkey-toggled dictation apps rather than mic-activity detection.
+
+Built on [AutoHotkey v2](https://autohotkey.com), which does the heavy lifting of observing keyboard events and controlling Windows audio.
 
 ## License
 
