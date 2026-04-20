@@ -1,0 +1,14 @@
+# Runtime artefacts
+*.log
+
+# Windows metadata
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# OneDrive / OS quirks
+*.tmp
+~$*
