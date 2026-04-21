@@ -1,34 +1,51 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-; Vowen Volume Ducker
-; Drops system volume to DUCK_LEVEL when Ctrl+Shift is pressed (start dictation).
-; Restores the previous volume on the next Ctrl+Shift press (stop dictation).
+; Vowen Volume Ducker (v2 — stateless)
 ;
-; Uses InputHook in VISIBLE / non-intercepting mode — keys are NOT swallowed,
-; so Vowen continues to receive Ctrl+Shift exactly as the user typed it.
-; This script is a silent observer only.
+; Drops system volume to DUCK_LEVEL when Ctrl+Shift is pressed (start dictation).
+; Restores the previously captured volume on the next Ctrl+Shift press (stop).
+;
+; Stateless design: every press reads the CURRENT system volume and decides
+; duck-vs-restore from that, not from an internal flag. This makes it
+; robust against phantom events, Set-Volume failures during early boot, or
+; anything else that could drift an internal "isDucked" flag out of sync
+; with reality.
+;
+; Uses InputHook in Visible / non-intercepting mode — keys are NOT swallowed,
+; so Vowen continues to receive Ctrl+Shift exactly as typed.
 
 ; ==== CONFIG ====
 DUCK_LEVEL := 10
+TOLERANCE  := 1.5  ; current volume within ±this of DUCK_LEVEL counts as "ducked"
 
 ; ==== STATE ====
-global g_IsDucked := false
-global g_PreviousVolume := 0
+; -1 is the "not yet captured" sentinel; gets replaced with the real current
+; volume either at startup or before the first duck, whichever comes first.
+global g_PreviousVolume := -1
 global g_CtrlHeld := false
 global g_ShiftHeld := false
-global g_Dirty := false  ; set when a non-modifier key is pressed while Ctrl+Shift held
+global g_Dirty := false
+
+; Capture startup volume so the very first restore has a sensible target,
+; even if the user double-taps Ctrl+Shift as their first action.
+try g_PreviousVolume := SoundGetVolume()
 
 ; ==== CORE ====
 ToggleDuck() {
-    global g_IsDucked, g_PreviousVolume, DUCK_LEVEL
-    if g_IsDucked {
+    global g_PreviousVolume, DUCK_LEVEL, TOLERANCE
+    currentVol := SoundGetVolume()
+    atDuckLevel := Abs(currentVol - DUCK_LEVEL) < TOLERANCE
+
+    if (atDuckLevel && g_PreviousVolume > DUCK_LEVEL + TOLERANCE) {
+        ; Currently ducked with a valid previous → restore
         SoundSetVolume(g_PreviousVolume)
-        g_IsDucked := false
     } else {
-        g_PreviousVolume := SoundGetVolume()
+        ; Not ducked (or no valid previous) → duck
+        if (currentVol > DUCK_LEVEL + TOLERANCE) {
+            g_PreviousVolume := currentVol  ; save only if current is meaningfully above duck
+        }
         SoundSetVolume(DUCK_LEVEL)
-        g_IsDucked := true
     }
 }
 

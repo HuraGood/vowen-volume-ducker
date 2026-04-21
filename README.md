@@ -125,7 +125,7 @@ Replace the virtual-key codes with whichever keys you want to watch. AutoHotkey'
 
 ## Troubleshooting
 
-**Volume goes in the wrong direction the first time** — this happens once if your system volume was already at exactly the `DUCK_LEVEL` (10%) when the script started. The internal "is-ducked" state flag flips without an audible change. One normal `Ctrl+Shift` cycle re-syncs it.
+**Volume doesn't change on the first press if I start at exactly 10%** — if your system volume is already at the `DUCK_LEVEL` when you first press Ctrl+Shift, the script has no meaningfully-louder "previous" volume to remember. It will reassert the duck level (no audible change). Raise the volume manually once to something above 10%, then Ctrl+Shift again, and it'll capture that as your new previous.
 
 **Nothing happens when I press Ctrl+Shift** — check the tray for a green **H**. No icon means the script isn't running; double-click `%LOCALAPPDATA%\VowenDucker\vowen-duck.ahk` to start it. If there's still no effect, your dictation app may be using a different shortcut than `Ctrl+Shift` — check its settings.
 
